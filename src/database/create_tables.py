@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS superstore_orders (
 
 conn.commit()
 
-print("✅ Table created successfully!")
+print("Table created successfully!")
 
 cursor.close()
 conn.close()

@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from extract import extract_data
+from src.etl.extract import extract_data
 
 
 def transform_data(df):

@@ -1,4 +1,4 @@
-from extract import extract_data
+from src.etl.extract import extract_data
 
 
 def profile_data(df):
