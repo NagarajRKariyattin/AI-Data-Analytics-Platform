@@ -1,4 +1,5 @@
  # 🚀 AI Data Analytics Platform
+# 🚀 AI Data Analytics Platform
 
 An end-to-end AI-powered data analytics platform that enables users to upload business data, perform ETL operations, query data using natural language, generate AI-powered business insights, and visualize results through interactive dashboards.
 
@@ -228,4 +229,8 @@ This project is licensed under the MIT License.
 - Cloud Deployment (AWS)
 - Multi-database Support
 - Scheduled ETL Jobs
+<<<<<<< HEAD
 - Predictive Analytics using Machine Learning
+=======
+- Predictive Analytics using Machine Learning
+>>>>>>> 5ce1ace19a6e8c6d971b7921559708d0273e293c
