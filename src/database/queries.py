@@ -88,3 +88,27 @@ def sales_by_sub_category():
     order by total_sales
     """
     return execute_query(query)
+def sales_by_region():
+    query = """
+    SELECT
+        "Region",
+        SUM("Sales") AS total_sales
+    FROM superstore
+    GROUP BY "Region"
+    ORDER BY total_sales DESC;
+    """
+    return execute_query(query)
+
+def monthly_sales():
+    query = """
+    SELECT
+    TO_CHAR(
+        DATE_TRUNC('month', TO_DATE("Order Date", 'MM/DD/YYYY')),
+        'Mon YYYY'
+    ) AS month,
+    SUM("Sales") AS total_sales
+    FROM superstore
+    GROUP BY month
+    ORDER BY MIN(TO_DATE("Order Date", 'MM/DD/YYYY'));
+    """
+    return execute_query(query)

@@ -4,6 +4,7 @@ from src.etl.transform import transform_data
 
 from src.database.loader import load_dataframe
 from src.database.queries import  *
+from src.visualization.charts import *
 
 def show_kpi_dashboard():
     sales = total_sales()
@@ -35,14 +36,69 @@ def show_business_reports():
     print("\n==========   TOTAL 10 CUSTOMERS BY SALES ==========")
     print(top_customers())
     
-    print("\n==========   TOTAL PROFIT BY REGION==========")
-    print(profit_by_region())
-
+    sales_region_df = sales_by_region()
+    print("\n==========   TOTAL SALES BY REGION==========")
+    print(sales_region_df)
+    
+    sales_by_categorys =sales_by_category()
     print("\n==========   TOTAL SALES BY CATEGORY==========")
-    print(sales_by_category())
+    #print(sales_by_category())
+    print(sales_by_categorys)
+
 
     print("\n==========   TOTAL SALES BY SUB-CATEGORY==========")
     print(sales_by_sub_category())
+
+    monthly_sale= monthly_sales()
+    print("\n==========   MONTHLY SALES==========")
+    print(monthly_sale)
+
+
+   # return sales_by_categorys
+    return monthly_sale
+
+def show_visualizations(monthly_sale):
+    #sales_region_df = sales_by_region()
+
+    # plot_sales_by_region(sales_region_df)
+    ''' plot_bar_chart(
+        sales_region_df,
+        x_column="Region",
+        y_column="total_sales",
+        title="Sales by Region",
+        x_label="Region",
+        y_label="Total Sales"
+    )
+    
+    
+    plot_horizontal_bar_chart(
+        sales_region_df,
+        x_column="Region",
+        y_column= "total_sales",
+        title ="Sales By Region in Horizontal view",
+        x_label="Region",
+        y_label="Total Sales"
+        )
+    
+    plot_pie_chart(
+        sales_by_categorys, 
+        labels_column= "Category", 
+        values_column="total_sales", 
+        title="sales by category"
+        )
+         '''
+    
+    plot_line_chart(
+         monthly_sale,
+         x_column="month", 
+         y_column="total_sales",
+         title="Monthly sales trend",
+         x_label="Month",
+         y_label="total sales"
+         )
+    
+    
+
 
 
 
@@ -59,7 +115,10 @@ def main():
     load_dataframe(cleaned_df, table_name)
     
     show_kpi_dashboard()
-    show_business_reports()
+   # sales_region_df = show_business_reports()
+    #sales_by_categorys = show_business_reports()
+    monthlysales=show_business_reports()
+    show_visualizations(monthlysales)
      
 
 
