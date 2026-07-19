@@ -98,7 +98,7 @@ def sales_by_region():
     ORDER BY total_sales DESC;
     """
     return execute_query(query)
-
+'''
 def monthly_sales():
     query = """
     SELECT
@@ -110,5 +110,20 @@ def monthly_sales():
     FROM superstore
     GROUP BY month
     ORDER BY MIN(TO_DATE("Order Date", 'MM/DD/YYYY'));
+    """
+    return execute_query(query)
+'''
+def monthly_sales():
+    query = """
+    SELECT
+        DATE_TRUNC('month', TO_DATE("Order Date", 'MM/DD/YYYY')) AS month_date,
+        TO_CHAR(
+            DATE_TRUNC('month', TO_DATE("Order Date", 'MM/DD/YYYY')),
+            'Mon YYYY'
+        ) AS month,
+        SUM("Sales") AS total_sales
+    FROM superstore
+    GROUP BY month_date
+    ORDER BY month_date;
     """
     return execute_query(query)
