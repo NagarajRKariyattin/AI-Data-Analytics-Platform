@@ -25,7 +25,7 @@ def plot_horizontal_bar_chart(df, x_column, y_column,title, x_label, y_label):
     fig, ax = plt.subplots(figsize=(6, 3))
     ax.barh(df[x_column], df[y_column])
     ax.set_title(title)
-    ax.set_xlabel(x_column)
+    ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     plt.tight_layout()
     filename=title.lower().replace(" ","_") + ".png"
@@ -55,12 +55,12 @@ def plot_pie_chart(df, labels_column, values_column, title):
     print(f"Chart Saved:{REPORT_DIR /filename}")
     return fig
 
-
+'''
 def plot_line_chart(df, x_column, y_column,title,x_label,y_label):
     fig, ax = plt.subplots(figsize=(6, 3))
     ax.plot(df[x_column], df[y_column], marker="o")
     ax.set_title(title)
-    set.set_xlabel(x_label)
+    ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     plt.gca().yaxis.set_major_formatter(
     FuncFormatter(lambda x, pos: f'{x/1000:.0f}K')
@@ -77,8 +77,25 @@ def plot_line_chart(df, x_column, y_column,title,x_label,y_label):
     #plt.show()
     print(f"Chart saved :{REPORT_DIR /filename}")
     return fig
+'''
 
+def plot_line_chart(df, x_column, y_column, title, x_label, y_label):
 
+    fig, ax = plt.subplots(figsize=(12, 5))
+
+    ax.plot(df[x_column], df[y_column], marker="o")
+
+    ax.set_title(title)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+
+    filename = title.lower().replace(" ", "_") + ".png"
+    plt.savefig(REPORT_DIR / filename)
+
+    return fig
 
 
 

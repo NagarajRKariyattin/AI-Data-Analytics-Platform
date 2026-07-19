@@ -6,6 +6,7 @@ from src.database.loader import load_dataframe
 from src.database.queries import  *
 from src.visualization.charts import *
 
+
 def show_kpi_dashboard():
     sales = total_sales()
     print("\n========== TOTAL SALES ==========")
@@ -30,6 +31,8 @@ def show_kpi_dashboard():
     total_product = total_products()
     print("\n==========   TOTAL PRODUCTS ==========")
     print(total_product)
+
+    
 '''
 def show_business_reports():
     #top_customer = top_customers()
@@ -58,6 +61,7 @@ def show_business_reports():
     return sales_region_df
 
 '''
+    
 def show_business_reports():
     reports = {
         "sales_region": sales_by_region(),
@@ -102,7 +106,7 @@ def show_visualizations(reports):
          
     
      plot_line_chart(
-         reports[monthly_sale],
+         reports["monthly_sale"],
          x_column="month", 
          y_column="total_sales",
          title="Monthly sales trend",
