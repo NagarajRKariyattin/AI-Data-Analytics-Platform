@@ -1,17 +1,16 @@
 import streamlit as st
 #from src.database.queries import sales_by_region
-from src.database.queries import (
-    total_sales,
-    total_profit,
-    total_orders,
-    total_customers,
-    total_products
-)
 from src.visualization.charts import  *
 from src.database.queries import *
 from src.ai.sql_generator import generate_sql
 from src.ai.executor import execute_sql
 from src.ai.validator import validate_sql
+
+from src.dashboard.components.history import (
+    initialize_history,
+    add_query,
+    show_history
+)
 
 st.set_page_config(
     page_title="AI Data Analytics Platform",
@@ -19,6 +18,8 @@ st.set_page_config(
 )
 
 st.title("📊 AI Data Analytics Platform")
+initialize_history()
+show_history() 
 col1, col2, col3, col4, col5 = st.columns(5)
 
 sales = total_sales().iloc[0, 0]
@@ -54,30 +55,44 @@ st.header("🤖 AI Data Analyst")
 
 question = st.text_input(
     "Ask a question about your data:",
+    value=st.session_state.get("selected_query", ""),
     placeholder="Example: Show total sales by region"
 )
 
 if st.button("Generate Report"):
+
     if question:
+
+        # Generate SQL
         sql = generate_sql(question)
 
-    st.subheader("Generated SQL")
-    st.code(sql, language="sql")
+        st.subheader("Generated SQL")
+        st.code(sql, language="sql")
 
-    is_valid, message = validate_sql(sql)
+        # Validate SQL
+        is_valid, message = validate_sql(sql)
 
-    if not is_valid:
-        st.error(f"❌ {message}")
-    else:
-        try:
-            df = execute_sql(sql)
+        if not is_valid:
+            st.error(f"❌ {message}")
 
-            st.subheader("Query Result")
-            st.dataframe(df, use_container_width=True)
+        else:
 
-        except Exception as e:
-            st.error("❌ Error while executing SQL.")
-            st.exception(e)
+            try:
+
+                # Execute SQL
+                df = execute_sql(sql)
+
+                # Save query history
+                add_query(question)
+
+                # Show result
+                st.subheader("Query Result")
+                st.dataframe(df, use_container_width=True)
+
+            except Exception as e:
+
+                st.error("❌ Error while executing SQL.")
+                st.exception(e)
  
 fig = plot_bar_chart(
     sales_region_df,

@@ -1,0 +1,26 @@
+Total Sales
+Total Profit
+Total Customers
+Total Products
+Total Orders
+
+Top 5 Products by Sales
+Top 5 Profitable Products
+
+Top Customers
+Top Cities
+Top States
+
+Sales by Category
+Profit by Category
+
+Sales by Region
+Profit by Region
+
+Sales by Segment
+
+Monthly Sales
+Monthly Profit
+Monthly Orders
+Yearly Sales
+Yearly Profit
