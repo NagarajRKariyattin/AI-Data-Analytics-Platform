@@ -11,6 +11,7 @@ from src.visualization.charts import  *
 from src.database.queries import *
 from src.ai.sql_generator import generate_sql
 from src.ai.executor import execute_sql
+from src.ai.validator import validate_sql
 
 st.set_page_config(
     page_title="AI Data Analytics Platform",
@@ -57,22 +58,26 @@ question = st.text_input(
 )
 
 if st.button("Generate Report"):
-
     if question:
+        sql = generate_sql(question)
+
+    st.subheader("Generated SQL")
+    st.code(sql, language="sql")
+
+    is_valid, message = validate_sql(sql)
+
+    if not is_valid:
+        st.error(f"❌ {message}")
+    else:
         try:
-            sql = generate_sql(question)
-
-            st.subheader("Generated SQL")
-            st.code(sql, language="sql")
-
             df = execute_sql(sql)
 
             st.subheader("Query Result")
             st.dataframe(df, use_container_width=True)
 
         except Exception as e:
-           st.error("❌ The AI generated an invalid SQL query.")
-           st.exception(e)
+            st.error("❌ Error while executing SQL.")
+            st.exception(e)
  
 fig = plot_bar_chart(
     sales_region_df,
