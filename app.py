@@ -146,4 +146,4 @@ if uploaded_file is not None:
 
 else:
     st.info("👆 Upload a CSV or Excel file to get started.")
-    print("-")
+    
