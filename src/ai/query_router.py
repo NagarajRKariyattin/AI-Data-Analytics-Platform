@@ -36,7 +36,7 @@ def get_predefined_sql(question):
     if "total sales" in question:
         return """
         SELECT SUM("Sales") AS total_sales
-        FROM superstore;
+        FROM employee;
         """
 
     # Total Profit
@@ -44,6 +44,19 @@ def get_predefined_sql(question):
         return """
         SELECT SUM("Profit") AS total_profit
         FROM superstore;
+        """
+    
+    if (
+    "top 5 profitable products" in question
+    or "top five profitable products" in question):
+        return """
+        SELECT
+        "Product Name",
+        SUM("Profit") AS total_profit
+        FROM superstore
+        GROUP BY "Product Name"
+        ORDER BY total_profit DESC
+        LIMIT 5;
         """
 
     return None
