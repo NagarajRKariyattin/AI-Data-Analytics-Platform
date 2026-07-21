@@ -263,6 +263,38 @@ PREDEFINED_QUERIES = {
     GROUP BY month
     ORDER BY month;
     """,
+   
+   (
+    "highest sales region",
+    "which region has the highest sales",
+    "top region by sales",
+    "best region",
+   ): """
+    SELECT
+    "Region",
+    SUM("Sales") AS total_sales
+    FROM superstore
+    GROUP BY "Region"
+    ORDER BY total_sales DESC
+    LIMIT 1;
+    """,
+
+    (
+    "most profitable category",
+    "which category is most profitable",
+    "best category by profit",
+):"""
+SELECT
+    "Category",
+    SUM("Profit") AS total_profit
+FROM superstore
+GROUP BY "Category"
+ORDER BY total_profit DESC
+LIMIT 1;
+""",
+
+
+    
 
 
 
