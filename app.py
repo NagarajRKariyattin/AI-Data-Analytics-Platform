@@ -3,11 +3,13 @@ import plotly.express as px
 
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
+from preprocessing.cleaning import (
+    remove_duplicates,
+    fill_missing_values,
+    standardize_text,
+)
+from utils.quality import calculate_quality
 
-
-# -----------------------------
-# Page Configuration
-# -----------------------------
 st.set_page_config(
     page_title="AI Business Analyst Assistant",
     page_icon="📊",
@@ -17,62 +19,36 @@ st.set_page_config(
 st.title("📊 AI Business Analyst Assistant")
 st.markdown("### Upload your CSV or Excel file to begin analysis")
 
-
-# -----------------------------
-# File Upload
-# -----------------------------
 uploaded_file = st.file_uploader(
     "Choose a CSV or Excel file",
     type=["csv", "xlsx"]
 )
 
-
-# -----------------------------
-# Process Uploaded File
-# -----------------------------
 if uploaded_file is not None:
-
     try:
-        # Load dataset
         df = load_data(uploaded_file)
-
-        # Generate profile
         profile = dataset_profile(df)
 
         st.success("✅ Dataset Loaded Successfully!")
 
-        # =============================
-        # KPI SECTION
-        # =============================
         st.subheader("📌 Dataset Overview")
-
-        col1, col2, col3, col4, col5 = st.columns(5)
-
-        col1.metric("Rows", profile["Rows"])
-        col2.metric("Columns", profile["Columns"])
-        col3.metric("Missing Values", profile["Total Missing"])
-        col4.metric("Duplicate Rows", profile["Duplicate Rows"])
-        col5.metric("Quality Score", f"{profile['Quality Score']}%")
+        c1, c2, c3, c4, c5 = st.columns(5)
+        c1.metric("Rows", profile["Rows"])
+        c2.metric("Columns", profile["Columns"])
+        c3.metric("Missing Values", profile["Total Missing"])
+        c4.metric("Duplicate Rows", profile["Duplicate Rows"])
+        c5.metric("Quality Score", f"{profile['Quality Score']}%")
 
         st.divider()
 
-        # =============================
-        # Dataset Preview
-        # =============================
         st.subheader("📄 Dataset Preview")
-
         st.dataframe(df, use_container_width=True)
 
         st.divider()
 
-        # =============================
-        # Missing Values
-        # =============================
         st.subheader("📊 Missing Value Analysis")
-
         missing_df = profile["Missing Values"].reset_index()
         missing_df.columns = ["Column", "Missing Values"]
-
         st.dataframe(missing_df, use_container_width=True)
 
         fig = px.bar(
@@ -80,39 +56,100 @@ if uploaded_file is not None:
             x="Column",
             y="Missing Values",
             title="Missing Values by Column",
-            text="Missing Values"
+            text="Missing Values",
         )
-
         st.plotly_chart(fig, use_container_width=True)
 
         st.divider()
 
-        # =============================
-        # Data Types
-        # =============================
         st.subheader("📑 Data Types")
-
         dtype_df = profile["Data Types"].reset_index()
         dtype_df.columns = ["Column", "Data Type"]
-
         st.dataframe(dtype_df, use_container_width=True)
 
         st.divider()
 
-        # =============================
-        # Summary Statistics
-        # =============================
         st.subheader("📈 Summary Statistics")
-
         st.dataframe(profile["Summary"], use_container_width=True)
 
         st.divider()
 
-        # =============================
-        # AI Recommendation
-        # =============================
-        st.subheader("🤖 AI Recommendation")
+        # -----------------------------
+        # Data Cleaning Center
+        # -----------------------------
+        st.subheader("🧹 Data Cleaning Center")
 
+        remove_dup = st.checkbox("Remove Duplicate Rows")
+        standardize = st.checkbox("Standardize Text")
+
+        numeric_method = st.radio(
+            "Numeric Missing Values",
+            ["mean", "median", "mode", "drop"],
+            horizontal=True,
+        )
+
+        text_method = st.radio(
+            "Text Missing Values",
+            ["mode", "unknown", "drop"],
+            horizontal=True,
+        )
+
+        if st.button("🚀 Clean Dataset"):
+            before = calculate_quality(df)
+
+            cleaned_df = df.copy()
+
+            duplicates_removed = 0
+            missing_filled = 0
+            text_columns = 0
+
+            if remove_dup:
+                cleaned_df, duplicates_removed = remove_duplicates(cleaned_df)
+
+            cleaned_df, missing_filled = fill_missing_values(
+                cleaned_df,
+                numeric_method=numeric_method,
+                text_method=text_method,
+            )
+
+            if standardize:
+                cleaned_df, text_columns = standardize_text(cleaned_df)
+
+            after = calculate_quality(cleaned_df)
+
+            st.success("✅ Dataset cleaned successfully!")
+
+            st.subheader("📊 Before vs After")
+            b1, b2 = st.columns(2)
+
+            with b1:
+                st.markdown("### Before")
+                st.metric("Rows", before["rows"])
+                st.metric("Missing", before["missing"])
+                st.metric("Duplicates", before["duplicates"])
+                st.metric("Quality", f"{before['quality']}%")
+
+            with b2:
+                st.markdown("### After")
+                st.metric("Rows", after["rows"])
+                st.metric("Missing", after["missing"])
+                st.metric("Duplicates", after["duplicates"])
+                st.metric("Quality", f"{after['quality']}%")
+
+            st.divider()
+
+            st.subheader("🧹 Cleaning Report")
+            r1, r2, r3 = st.columns(3)
+            r1.metric("Duplicates Removed", duplicates_removed)
+            r2.metric("Missing Values Filled", missing_filled)
+            r3.metric("Text Columns Standardized", text_columns)
+
+            st.subheader("🧹 Cleaned Dataset")
+            st.dataframe(cleaned_df, use_container_width=True)
+
+        st.divider()
+
+        st.subheader("🤖 AI Recommendation")
         recommendations = []
 
         if profile["Duplicate Rows"] > 0:
