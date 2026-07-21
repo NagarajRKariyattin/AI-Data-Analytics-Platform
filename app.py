@@ -7,6 +7,7 @@ from preprocessing.cleaning import (
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
+from utils.quality import calculate_quality
 
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
@@ -168,101 +169,132 @@ if uploaded_file is not None:
         )
 
         st.divider()
-
         if st.button("🚀 Clean Dataset", use_container_width=True):
-            ##guage----------------------------------------------------
-            
-#----------------------------------------------------------------------------------------------
+
+            before = calculate_quality(df)
             cleaned_df = df.copy()
 
             duplicates_removed = 0
             missing_filled = 0
             text_columns = 0
 
-            # Remove Duplicates
             if remove_dup:
                 cleaned_df, duplicates_removed = remove_duplicates(cleaned_df)
 
-            # Fill Missing Values
             cleaned_df, missing_filled = fill_missing_values(
                 cleaned_df,
                 numeric_method=numeric_method,
                 text_method=text_method
             )
 
-            # Standardize Text
             if standardize:
                 cleaned_df, text_columns = standardize_text(cleaned_df)
 
+            after = calculate_quality(cleaned_df)
+
             st.success("✅ Dataset cleaned successfully!")
-            
 
-            st.subheader("📋 Cleaning Report")
+            st.subheader("📊 Before vs After")
+            c1, c2 = st.columns(2)
 
-            col1, col2, col3 = st.columns(3)
+            with c1:
+                st.metric("Rows", before["rows"])
+                st.metric("Missing", before["missing"])
+                st.metric("Duplicates", before["duplicates"])
+                st.metric("Quality", f"{before['quality']}%")
 
-            col1.metric("Duplicates Removed", duplicates_removed)
-            col2.metric("Missing Values Filled", missing_filled)
-            col3.metric("Text Columns Standardized", text_columns)
+            with c2:
+                st.metric("Rows", after["rows"])
+                st.metric("Missing", after["missing"])
+                st.metric("Duplicates", after["duplicates"])
+                st.metric("Quality", f"{after['quality']}%")
 
-            st.divider()
+                st.divider()
+                            # ==================================================
+            # Data Quality Gauge
+            # ==================================================
+            st.subheader("📈 Data Quality Gauge")
 
-            st.subheader("📄 Cleaned Dataset")
+            g1, g2 = st.columns(2)
 
-            st.dataframe(
-                cleaned_df,
+            with g1:
+                before_fig = go.Figure(
+                    go.Indicator(
+                        mode="gauge+number",
+                        value=before["quality"],
+                        title={"text": "Before Cleaning"},
+                        gauge={
+                            "axis": {"range": [0, 100]},
+                            "bar": {"color": "red"},
+                            "steps": [
+                                {"range": [0, 50], "color": "#ffcccc"},
+                                {"range": [50, 80], "color": "#ffe699"},
+                                {"range": [80, 100], "color": "#d9ead3"},
+                            ],
+                        },
+                    )
+                )
+
+                before_fig.update_layout(height=300)
+
+                st.plotly_chart(
+                    before_fig,
+                    use_container_width=True
+                )
+
+            with g2:
+                after_fig = go.Figure(
+                    go.Indicator(
+                        mode="gauge+number",
+                        value=after["quality"],
+                        title={"text": "After Cleaning"},
+                        gauge={
+                            "axis": {"range": [0, 100]},
+                            "bar": {"color": "green"},
+                            "steps": [
+                                {"range": [0, 50], "color": "#ffcccc"},
+                                {"range": [50, 80], "color": "#ffe699"},
+                                {"range": [80, 100], "color": "#d9ead3"},
+                            ],
+                        },
+                    )
+                )
+
+                after_fig.update_layout(height=300)
+
+                st.plotly_chart(
+                    after_fig,
+                    use_container_width=True
+                )
+
+            # ==================================================
+            # Improvement
+            # ==================================================
+            improvement = round(
+                after["quality"] - before["quality"],
+                2
+            )
+
+            st.success(
+                f"🎉 Data Quality Improved by {improvement}%"
+            )
+
+            improvement = round(after["quality"]-before["quality"],2)
+            st.success(f"🎉 Data Quality Improved by {improvement}%")
+
+            st.dataframe(cleaned_df, use_container_width=True)
+
+            csv = cleaned_df.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                "📥 Download Cleaned CSV",
+                csv,
+                "cleaned_dataset.csv",
+                "text/csv",
                 use_container_width=True
             )
-            csv = cleaned_df.to_csv(index=False).encode("utf-8")
-
-            st.download_button(
-            label="📥 Download Cleaned CSV",
-            data=csv,
-            file_name="cleaned_dataset.csv",
-            mime="text/csv",
-            
-)
-
-        # ==================================================
-        # AI Recommendation
-        # ==================================================
-        st.subheader("🤖 AI Recommendation")
-
-        recommendations = []
-
-        if profile["Duplicate Rows"] > 0:
-            recommendations.append(
-                f"Remove {profile['Duplicate Rows']} duplicate rows."
-            )
-
-        if profile["Total Missing"] > 0:
-            recommendations.append(
-                f"Handle {profile['Total Missing']} missing values."
-            )
-
-        if profile["Quality Score"] >= 95:
-            recommendations.append(
-                "Dataset quality is excellent and ready for analysis."
-            )
-
-        elif profile["Quality Score"] >= 85:
-            recommendations.append(
-                "Dataset quality is good, but minor cleaning is recommended."
-            )
-
-        else:
-            recommendations.append(
-                "Dataset quality is low. Perform data cleaning before analysis."
-            )
-
-        for item in recommendations:
-            st.info(item)
 
     except Exception as e:
-
-        st.error(f"❌ Error : {e}")
+        st.error(f"❌ Error: {e}")
 
 else:
-
     st.info("👆 Upload a CSV or Excel file to begin.")
-    
