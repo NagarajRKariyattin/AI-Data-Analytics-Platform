@@ -147,6 +147,14 @@ if uploaded_file is not None:
             st.subheader("🧹 Cleaned Dataset")
             st.dataframe(cleaned_df, use_container_width=True)
 
+            csv = cleaned_df.to_csv(index=False).encode("utf-8")
+            st.download_button(
+                label="📥 Download Cleaned CSV",
+                data=csv,
+                file_name="cleaned_dataset.csv",
+                mime="text/csv",
+            )
+
         st.divider()
 
         st.subheader("🤖 AI Recommendation")
