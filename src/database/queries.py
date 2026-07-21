@@ -30,7 +30,7 @@ def average_sales():
 
 def total_orders():
     query = """
-    select count(*) as total_orders from superstore
+    select count(distinct "Order ID") as total_orders from superstore
     """
     return execute_query(query)
 
