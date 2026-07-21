@@ -1,6 +1,4 @@
 
-# src/ai/query_router.py
-
 PREDEFINED_QUERIES = {
     (
         "total sales",
@@ -210,8 +208,8 @@ PREDEFINED_QUERIES = {
     "monthly revenue",
 ): """
     SELECT
-        DATE_TRUNC('month', "Order Date") AS month,
-        SUM("Sales") AS total_sales
+    DATE_TRUNC('month', TO_DATE("Order Date", 'MM/DD/YYYY')) AS month,
+    SUM("Sales") AS total_sales
     FROM superstore
     GROUP BY month
     ORDER BY month;
@@ -223,8 +221,8 @@ PREDEFINED_QUERIES = {
     "month wise profit",
 ): """
     SELECT
-        DATE_TRUNC('month', "Order Date") AS month,
-        SUM("Profit") AS total_profit
+    DATE_TRUNC('month', TO_DATE("Order Date", 'MM/DD/YYYY')) AS month,
+    SUM("Profit") AS total_profit
     FROM superstore
     GROUP BY month
     ORDER BY month;
@@ -235,8 +233,8 @@ PREDEFINED_QUERIES = {
     "annual sales",
 ): """
     SELECT
-        DATE_TRUNC('year', "Order Date") AS year,
-        SUM("Sales") AS total_sales
+    DATE_TRUNC('year', TO_DATE("Order Date", 'MM/DD/YYYY')) AS year,
+    SUM("Sales") AS total_sales
     FROM superstore
     GROUP BY year
     ORDER BY year;
@@ -247,8 +245,8 @@ PREDEFINED_QUERIES = {
     "annual profit",
 ): """
     SELECT
-        DATE_TRUNC('year', "Order Date") AS year,
-        SUM("Profit") AS total_profit
+    DATE_TRUNC('year', TO_DATE("Order Date", 'MM/DD/YYYY')) AS year,
+    SUM("Profit") AS total_profit
     FROM superstore
     GROUP BY year
     ORDER BY year;
@@ -259,8 +257,8 @@ PREDEFINED_QUERIES = {
     "order trend",
 ): """
     SELECT
-        DATE_TRUNC('month', "Order Date") AS month,
-        COUNT(DISTINCT "Order ID") AS total_orders
+    DATE_TRUNC('month', TO_DATE("Order Date", 'MM/DD/YYYY')) AS month,
+    COUNT(DISTINCT "Order ID") AS total_orders
     FROM superstore
     GROUP BY month
     ORDER BY month;
@@ -272,13 +270,19 @@ PREDEFINED_QUERIES = {
 
 def get_predefined_sql(question):
     """
-    Return predefined SQL if the question matches.
+    Return the SQL for the best matching predefined query.
+    Chooses the longest matching keyword.
     """
 
     question = question.lower().strip()
 
+    best_sql = None
+    best_length = -1
+
     for keywords, sql in PREDEFINED_QUERIES.items():
-        for keywords, sql in PREDEFINED_QUERIES.items():
-            if any(keyword in question for keyword in keywords):
-                return sql
-    return None
+        for keyword in keywords:
+            if keyword in question and len(keyword) > best_length:
+                best_sql = sql
+                best_length = len(keyword)
+
+    return best_sql

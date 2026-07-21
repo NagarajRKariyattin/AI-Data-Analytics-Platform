@@ -1,26 +1,49 @@
-Total Sales
-Total Profit
-Total Customers
-Total Products
-Total Orders
+Total Sales ---------done 
+Total Profit---------done
+Total Customers------done
+Total Products-------done
+Total Orders---------done
 
-Top 5 Products by Sales
-Top 5 Profitable Products
+Top 5 Products by Sales----done 
 
-Top Customers
-Top Cities
-Top States
+Top 5 Profitable Products -------  Top 5 Profitable Products---done 
 
-Sales by Category
-Profit by Category
+Top Customers----done 
+Top Cities------done
+Top States-----done
 
-Sales by Region
-Profit by Region
+Sales by Category---done
+ 
+Profit by Category----done
+   
 
-Sales by Segment
+Sales by Region----done 
+Profit by Region----done
+Sales by Segment---done 
 
-Monthly Sales
+###
+Monthly Sales   
+
+❌ Error while executing SQL.
+
+DatabaseError: Execution failed on sql ' SELECT DATE_TRUNC('month', "Order Date") AS month, SUM("Sales") AS total_sales FROM superstore GROUP BY month ORDER BY month; ': function date_trunc(unknown, text) does not exist LINE 3: DATE_TRUNC('month', "Order Date") AS month, ^ HINT: No function matches the given name and argument types. You might need to add explicit type casts.
+###
+
+ 
 Monthly Profit
+
+ 
 Monthly Orders
+
+
 Yearly Sales
+
+ 
+    
+
+❌ Error while executing SQL.
+
+DatabaseError: Execution failed on sql ' SELECT DATE_TRUNC('year', "Order Date") AS year, SUM("Sales") AS total_sales FROM superstore GROUP BY year ORDER BY year; ': function date_trunc(unknown, text) does not exist LINE 3: DATE_TRUNC('year', "Order Date") AS year, ^ HINT: No function matches the given name and argument types. You might need to add explicit type casts.
+
 Yearly Profit
+ 
