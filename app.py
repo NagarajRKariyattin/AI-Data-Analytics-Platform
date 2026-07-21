@@ -6,6 +6,7 @@ from preprocessing.cleaning import (
 
 import streamlit as st
 import plotly.express as px
+import plotly.graph_objects as go
 
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
@@ -169,7 +170,9 @@ if uploaded_file is not None:
         st.divider()
 
         if st.button("🚀 Clean Dataset", use_container_width=True):
-
+            ##guage----------------------------------------------------
+            
+#----------------------------------------------------------------------------------------------
             cleaned_df = df.copy()
 
             duplicates_removed = 0
@@ -192,6 +195,7 @@ if uploaded_file is not None:
                 cleaned_df, text_columns = standardize_text(cleaned_df)
 
             st.success("✅ Dataset cleaned successfully!")
+            
 
             st.subheader("📋 Cleaning Report")
 
@@ -209,6 +213,14 @@ if uploaded_file is not None:
                 cleaned_df,
                 use_container_width=True
             )
+            csv = cleaned_df.to_csv(index=False).encode("utf-8")
+
+            st.download_button(
+            label="📥 Download Cleaned CSV",
+            data=csv,
+            file_name="cleaned_dataset.csv",
+            mime="text/csv",
+)
 
         # ==================================================
         # AI Recommendation
