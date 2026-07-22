@@ -275,9 +275,7 @@ if uploaded_file is not None:
                 2
             )
 
-            st.success(
-                f"🎉 Data Quality Improved by {improvement}%"
-            )
+            
 
             improvement = round(after["quality"]-before["quality"],2)
             st.success(f"🎉 Data Quality Improved by {improvement}%")
