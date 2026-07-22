@@ -1,12 +1,12 @@
 [
-    "Which customer generated the highest revenue?",
-    "What are the top 3 products by profit?",
-    "Show shipping mode performance.",
-    "Top 10 cities by profit.",
-    "Show average sales by customer.",
-    "Show average profit by state",
-    "What is the average sales?",
-    "Show the worst performing category.",
-    "Which category is most profitable?",
-    "Which region has the highest sales"
+    "low category sales",
+    "avg sales",
+    "avg profit by states",
+    "avg sales by custom",
+    "total Average sales by customer",
+    "Average Sales by Customer",
+    "top cities by profit",
+    "shipping mode",
+    "Shipping Mode Performance",
+    "profitable products"
 ]

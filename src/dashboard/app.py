@@ -20,6 +20,8 @@ st.set_page_config(
 st.title("📊 AI Data Analytics Platform")
 initialize_history()
 show_history() 
+if "selected_query" not in st.session_state:
+    st.session_state.selected_query = ""
 col1, col2, col3, col4, col5 = st.columns(5)
 
 sales = total_sales().iloc[0, 0]
