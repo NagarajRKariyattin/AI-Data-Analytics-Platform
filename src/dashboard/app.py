@@ -11,6 +11,7 @@ from src.dashboard.components.history import (
     add_query,
     show_history
 )
+from src.ai.insights import generate_insights
 
 st.set_page_config(
     page_title="AI Data Analytics Platform",
@@ -83,18 +84,35 @@ if st.button("Generate Report"):
 
                 # Execute SQL
                 df = execute_sql(sql)
+                st.session_state["query_df"] = df
+                st.session_state["question"] = question
 
                 # Save query history
                 add_query(question)
 
                 # Show result
-                st.subheader("Query Result")
-                st.dataframe(df, use_container_width=True)
 
             except Exception as e:
 
-                st.error("❌ Error while executing SQL.")
+                st.error(" Error while executing SQL.")
                 st.exception(e)
+
+if "query_df" in st.session_state:
+
+    st.subheader("Query Result")
+    st.dataframe(st.session_state["query_df"], use_container_width=True)
+
+    if st.button("✨ Generate AI Insights"):
+
+        with st.spinner("Analyzing data..."):
+
+            insights = generate_insights(
+                st.session_state["query_df"],
+                st.session_state["question"]
+            )
+
+        st.subheader("🤖 AI Business Insights")
+        st.success(insights)
  
 fig = plot_bar_chart(
     sales_region_df,
