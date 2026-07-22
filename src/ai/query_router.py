@@ -263,6 +263,152 @@ PREDEFINED_QUERIES = {
     GROUP BY month
     ORDER BY month;
     """,
+   
+   (
+    "highest sales region",
+    "which region has the highest sales",
+    "top region by sales",
+    "best region",
+   ): """
+    SELECT
+    "Region",
+    SUM("Sales") AS total_sales
+    FROM superstore
+    GROUP BY "Region"
+    ORDER BY total_sales DESC
+    LIMIT 1;
+    """,
+
+    (
+    "most profitable category",
+    "which category is most profitable",
+    "best category by profit",
+):"""
+SELECT
+    "Category",
+    SUM("Profit") AS total_profit
+FROM superstore
+GROUP BY "Category"
+ORDER BY total_profit DESC
+LIMIT 1;
+""",
+ (
+    "Worst Performing Category",
+    "low category sales",
+    "low category by profit",
+):"""
+SELECT
+    "Category",
+    SUM("Sales") AS total_sales
+FROM superstore
+GROUP BY "Category"
+ORDER BY total_sales ASC
+LIMIT 1;
+""" ,
+(
+    "average sales",
+    "avg sales",
+    "total Average sales",
+):"""
+SELECT
+    AVG("Sales") AS average_sales
+FROM superstore;
+""",
+
+(
+    "average profit by state",
+    "avg profit by states",
+    "total Average profit by states",
+):"""
+SELECT
+    "State",
+    AVG("Profit") AS average_profit
+FROM superstore
+GROUP BY "State"
+ORDER BY average_profit DESC;
+""",
+
+(
+    "avg sales by custom"
+    "Average Sales by Customer",
+    "customer average sales",
+     
+):"""
+SELECT
+    "Customer Name",
+    AVG("Sales") AS average_sales
+FROM superstore
+GROUP BY "Customer Name"
+ORDER BY average_sales DESC;
+""",
+
+(
+    "top cities by profit",
+    "profitable cities most top",
+    "top 10 cities know for profit",
+):"""
+SELECT
+    "City",
+    SUM("Profit") AS total_profit
+FROM superstore
+GROUP BY "City"
+ORDER BY total_profit DESC
+LIMIT 10;
+""",
+
+( 
+ "shipping mode"
+):"""
+SELECT
+    "Ship Mode",
+    COUNT(*) AS total_orders,
+    SUM("Sales") AS total_sales,
+    SUM("Profit") AS total_profit
+FROM superstore
+GROUP BY "Ship Mode"
+ORDER BY total_sales DESC;
+""",
+
+(
+    "profitable products",
+    "top most products by profit",
+):"""
+
+SELECT
+    "Product Name",
+    SUM("Profit") AS total_profit
+FROM superstore
+GROUP BY "Product Name"
+ORDER BY total_profit DESC
+LIMIT 3;
+""",
+
+(
+    "Customer with Highest Revenue",
+    "Highest Revenue with Customer",
+    "Highest Revenue with Customer",
+):"""
+SELECT
+    "Customer Name",
+    SUM("Sales") AS total_sales
+FROM superstore
+GROUP BY "Customer Name"
+ORDER BY total_sales DESC
+LIMIT 1;
+"""
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
 
