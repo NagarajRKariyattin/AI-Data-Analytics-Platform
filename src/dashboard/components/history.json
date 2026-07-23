@@ -1,12 +1,12 @@
 [
-    "total profit by region",
-    "shipping mode",
-    "top cities by profit",
-    "low category sales",
+    "sales by monthly",
+    "avg sales by custom",
     "avg sales",
     "avg profit by states",
-    "avg sales by custom",
-    "total Average sales by customer",
-    "Average Sales by Customer",
-    "Shipping Mode Performance"
+    "low category sales",
+    "top cities by profit",
+    "sales by category",
+    "sales by region",
+    "total profit by region",
+    "shipping mode"
 ]

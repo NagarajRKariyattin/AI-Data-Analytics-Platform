@@ -5,7 +5,7 @@ from src.database.queries import *
 from src.ai.sql_generator import generate_sql
 from src.ai.executor import execute_sql
 from src.ai.validator import validate_sql
-
+from src.export.export_excel import export_to_excel
 from src.dashboard.components.history import (
     initialize_history,
     add_query,
@@ -101,6 +101,28 @@ if "query_df" in st.session_state:
 
     st.subheader("Query Result")
     st.dataframe(st.session_state["query_df"], use_container_width=True)
+    csv = st.session_state["query_df"].to_csv(index=False)
+
+    st.download_button(
+    label="⬇ Download CSV",
+    data=csv,
+    file_name="query_result.csv",
+    mime="text/csv"
+    )
+    excel_file = export_to_excel(st.session_state["query_df"])
+
+    st.download_button(
+    label="⬇ Download Excel",
+    data=excel_file,
+    file_name="query_result.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    
+    fig = render_auto_chart(st.session_state["query_df"])
+
+    if fig:
+        st.subheader("📊 Visualization")
+        st.pyplot(fig)
 
     if st.button("✨ Generate AI Insights"):
 
@@ -114,51 +136,3 @@ if "query_df" in st.session_state:
         st.subheader("🤖 AI Business Insights")
         st.success(insights)
  
-fig = plot_bar_chart(
-    sales_region_df,
-    "Region",
-    #"Sales",
-    "total_sales",
-    "Sales by Region",
-    "Region",
-    "Sales"
-)
-st.subheader(" Sales by Region")
-#st.pyplot(region_fig)
-st.pyplot(fig)
-sales_category_df = sales_by_category()
-fig= plot_pie_chart(
-        sales_category_df,
-        #sales_category,
-        "Category",
-        "total_sales",
-        "Sales by Category"
-    )
-st.subheader("Sales by Category")
-st.pyplot(fig)
-monthly_df = monthly_sales()
-st.write(monthly_df)
-st.write(monthly_df.shape)
-
-fig=  plot_line_chart(
-        monthly_df,
-        "month",
-        "total_sales",
-        "Monthly Sales Trend",
-        "Month",
-        "Sales"
-    )
-st.subheader("Monthly Sales Trend")
-st.pyplot(fig)
-
-top_customer_df = top_customers()
-fig=  plot_horizontal_bar_chart(
-        top_customer_df,
-        "Customer Name",
-        "total_sales",
-        "Top Customers",
-        "Customer",
-        "Sales"
-    )
-st.subheader("Top 10 Customers")
-st.pyplot(fig)
