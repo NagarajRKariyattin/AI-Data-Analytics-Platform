@@ -313,37 +313,39 @@ if uploaded_file is not None:
             # ==================================================
             # Sidebar Filters
             # ==================================================
-            st.sidebar.header("🎛 Dashboard Filters")
+            # st.sidebar.header("🎛 Dashboard Filters")
 
             # Category Filter
-            if "Category" in dashboard_df.columns:
+            # if "Category" in dashboard_df.columns:
 
-                category = st.sidebar.selectbox(
-                    "Category",
-                    ["All"] + sorted(
-                        dashboard_df["Category"].dropna().unique().tolist()
-                    )
-                )
+            #     category = st.sidebar.selectbox(
+            #         "Category",
+            #         ["All"] + sorted(
+            #             dashboard_df["Category"].dropna().unique().tolist()
+            #         ),
+            #         key="category_filter"
+            #     )
 
-                if category != "All":
-                    dashboard_df = dashboard_df[
-                        dashboard_df["Category"] == category
-                    ]
+                # if category != "All":
+                #     dashboard_df = dashboard_df[
+                #         dashboard_df["Category"] == category
+                #     ]
 
             # State Filter
-            if "State" in dashboard_df.columns:
+            # if "State" in dashboard_df.columns:
 
-                state = st.sidebar.selectbox(
-                    "State",
-                    ["All"] + sorted(
-                        dashboard_df["State"].dropna().unique().tolist()
-                    )
-                )
+            #     state = st.sidebar.selectbox(
+            #         "State",
+            #         ["All"] + sorted(
+            #             dashboard_df["State"].dropna().unique().tolist()
+            #         ),
+            #         key="state_filter"
+            #     )
 
-                if state != "All":
-                    dashboard_df = dashboard_df[
-                        dashboard_df["State"] == state
-                    ]
+                # if state != "All":
+                    # dashboard_df = dashboard_df[
+                    #     dashboard_df["State"] == state
+                    # ]
 
             st.divider()
 
