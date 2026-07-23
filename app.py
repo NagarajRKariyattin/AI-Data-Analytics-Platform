@@ -169,10 +169,13 @@ if uploaded_file is not None:
         )
 
         st.divider()
-        if st.button("🚀 Clean Dataset", use_container_width=True):
+        if st.button("🚀 Clean Dataset", use_container_width=True): #-------------------------------------------------------------
 
             before = calculate_quality(df)
             cleaned_df = df.copy()
+
+# Save cleaned data
+            st.session_state["cleaned_df"] = cleaned_df
 
             duplicates_removed = 0
             missing_filled = 0
@@ -291,8 +294,163 @@ if uploaded_file is not None:
                 use_container_width=True
             )
 
+
+
+# Save the FINAL cleaned dataframe
+            st.session_state["cleaned_df"] = cleaned_df
+            # ==================================================
+            # Interactive Dashboard
+            # ==================================================
+            
+
+            if "cleaned_df" in st.session_state:
+
+                st.header("📊 Interactive Business Dashboard")
+                dashboard_df = st.session_state["cleaned_df"].copy()
+            else:
+                st.warning("Please clean the dataset first.")
+                st.stop()
+            # ==================================================
+            # Sidebar Filters
+            # ==================================================
+            st.sidebar.header("🎛 Dashboard Filters")
+
+            # Category Filter
+            if "Category" in dashboard_df.columns:
+
+                category = st.sidebar.selectbox(
+                    "Category",
+                    ["All"] + sorted(
+                        dashboard_df["Category"].dropna().unique().tolist()
+                    )
+                )
+
+                if category != "All":
+                    dashboard_df = dashboard_df[
+                        dashboard_df["Category"] == category
+                    ]
+
+            # State Filter
+            if "State" in dashboard_df.columns:
+
+                state = st.sidebar.selectbox(
+                    "State",
+                    ["All"] + sorted(
+                        dashboard_df["State"].dropna().unique().tolist()
+                    )
+                )
+
+                if state != "All":
+                    dashboard_df = dashboard_df[
+                        dashboard_df["State"] == state
+                    ]
+
+            st.divider()
+
+            st.info(
+                "Dashboard section moved here so 'cleaned_df' is in scope. "
+                "Paste the dashboard charts, filters, KPIs and visualizations "
+                "below this line, keeping the same indentation."
+            )
+
+
     except Exception as e:
         st.error(f"❌ Error: {e}")
 
 else:
     st.info("👆 Upload a CSV or Excel file to begin.")
+    # ==================================================
+# Interactive Dashboard
+# ==================================================
+
+if "cleaned_df" in st.session_state:
+
+    st.header("📊 Interactive Business Dashboard")
+
+    dashboard_df = st.session_state["cleaned_df"].copy()
+
+    # ==================================================
+    # Sidebar Filters
+    # ==================================================
+
+    st.sidebar.header("🎛 Dashboard Filters")
+
+    # Category Filter
+    if "Category" in dashboard_df.columns:
+
+        category = st.sidebar.selectbox(
+            "Category",
+            ["All"] + sorted(
+                dashboard_df["Category"]
+                .dropna()
+                .unique()
+                .tolist()
+            )
+        )
+
+        if category != "All":
+            dashboard_df = dashboard_df[
+                dashboard_df["Category"] == category
+            ]
+
+    # State Filter
+    if "State" in dashboard_df.columns:
+
+        state = st.sidebar.selectbox(
+            "State",
+            ["All"] + sorted(
+                dashboard_df["State"]
+                .dropna()
+                .unique()
+                .tolist()
+            )
+        )
+
+        if state != "All":
+            dashboard_df = dashboard_df[
+                dashboard_df["State"] == state
+            ]
+
+    st.divider()
+
+    # ==================================================
+    # Paste all KPI cards below
+    # ==================================================
+
+    st.subheader("📌 Business KPIs")
+
+    total_sales = (
+        dashboard_df["Sales"].sum()
+        if "Sales" in dashboard_df.columns
+        else 0
+    )
+
+    total_profit = (
+        dashboard_df["Profit"].sum()
+        if "Profit" in dashboard_df.columns
+        else 0
+    )
+
+    total_orders = len(dashboard_df)
+
+    average_sales = (
+        dashboard_df["Sales"].mean()
+        if "Sales" in dashboard_df.columns
+        else 0
+    )
+
+    k1, k2, k3, k4 = st.columns(4)
+
+    k1.metric("💰 Total Sales", f"{total_sales:,.2f}")
+    k2.metric("📈 Total Profit", f"{total_profit:,.2f}")
+    k3.metric("🛒 Orders", total_orders)
+    k4.metric("📦 Avg Sales", f"{average_sales:,.2f}")
+
+    st.divider()
+
+    # Continue pasting your Category Chart,
+    # State Chart,
+    # Top Products,
+    # Scatter Plot
+    # below this line.
+
