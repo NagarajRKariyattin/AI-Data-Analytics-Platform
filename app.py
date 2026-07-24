@@ -8,6 +8,8 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 from utils.quality import calculate_quality
+from ai_insights import generate_ai_insights
+from summary_generator import generate_summary
 
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
@@ -450,9 +452,115 @@ if "cleaned_df" in st.session_state:
 
     st.divider()
 
+
     # Continue pasting your Category Chart,
     # State Chart,
     # Top Products,
     # Scatter Plot
     # below this line.
+    st.divider()
+    # Dashboard charts
 
+# ==================================================
+# Business Metrics
+# ==================================================
+
+    sales = (
+        dashboard_df["Sales"].sum()
+        if "Sales" in dashboard_df.columns
+        else 0
+    )
+
+    profit = (
+        dashboard_df["Profit"].sum()
+        if "Profit" in dashboard_df.columns
+        else 0
+    )
+
+    orders = len(dashboard_df)
+
+    best_category = None
+    worst_category = None
+    best_state = None
+
+    if all(col in dashboard_df.columns for col in ["Category", "Sales"]):
+        category_sales = dashboard_df.groupby("Category")["Sales"].sum()
+
+        best_category = category_sales.idxmax()
+        worst_category = category_sales.idxmin()
+
+    if all(col in dashboard_df.columns for col in ["State", "Sales"]):
+        state_sales = dashboard_df.groupby("State")["Sales"].sum()
+
+        best_state = state_sales.idxmax()
+
+    st.header("🤖 AI Business Insights")
+
+    st.subheader("📈 Key Insights")
+
+    insights = [
+        f"💰 Total Sales: ₹{sales:,.2f}",
+        f"📈 Total Profit: ₹{profit:,.2f}",
+        f"🛒 Total Orders: {orders}",
+    ]
+
+    if best_category:
+        insights.append(
+            f"🏆 Highest Selling Category: {best_category}"
+        )
+
+    if worst_category:
+        insights.append(
+            f"⚠ Lowest Selling Category: {worst_category}"
+        )
+
+    if best_state:
+        insights.append(
+            f"🌍 Best Performing State: {best_state}"
+        )
+
+    for insight in insights:
+        st.success(insight)
+
+    # ==================================================
+    # AI Recommendations
+    # ==================================================
+
+    st.subheader("💡 AI Recommendations")
+
+    recommendations = []
+
+    if profit < 0:
+        recommendations.append(
+            "Overall profit is negative. Review pricing and discounts."
+        )
+
+    if best_category:
+        recommendations.append(
+            f"Increase marketing investment in **{best_category}**."
+        )
+
+    if worst_category:
+        recommendations.append(
+            f"Investigate why **{worst_category}** has lower sales."
+        )
+
+    if best_state:
+        recommendations.append(
+            f"Replicate successful strategies used in **{best_state}**."
+        )
+
+    for rec in recommendations:
+        st.info(rec)
+        summary = generate_summary(dashboard_df)
+st.divider()
+
+st.header("🤖 AI Business Analyst")
+
+if st.button("Generate AI Insights"):
+
+    with st.spinner("Gemini is analyzing your business..."):
+
+        insights = generate_ai_insights(summary)
+
+    st.markdown(insights)
