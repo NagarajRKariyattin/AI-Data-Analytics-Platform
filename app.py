@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 from utils.quality import calculate_quality
 from ai_insights import generate_ai_insights
 from summary_generator import generate_summary
+from chatbot import ask_business_analyst
 
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
@@ -564,3 +565,46 @@ if st.button("Generate AI Insights"):
         insights = generate_ai_insights(summary)
 
     st.markdown(insights)
+#---------------------------------------business insights---------------
+    st.divider()
+
+st.header("💬 Chat with Your Business Analyst")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+prompt = st.chat_input("Ask your Business Analyst...")
+
+if prompt:
+
+    st.session_state.messages.append(
+        {
+            "role": "user",
+            "content": prompt
+        }
+    )
+
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+
+        with st.spinner("Thinking..."):
+
+            answer = ask_business_analyst(
+                summary,
+                prompt
+            )
+
+            st.markdown(answer)
+
+    st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": answer
+        }
+    )
