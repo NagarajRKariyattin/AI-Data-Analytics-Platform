@@ -11,6 +11,9 @@ from utils.quality import calculate_quality
 from ai_insights import generate_ai_insights
 from summary_generator import generate_summary
 from chatbot import ask_business_analyst
+print("Imported from:", ask_business_analyst.__module__)
+print("Function:", ask_business_analyst)
+print("Arg count:", ask_business_analyst.__code__.co_argcount)
 
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
@@ -550,61 +553,74 @@ if "cleaned_df" in st.session_state:
         recommendations.append(
             f"Replicate successful strategies used in **{best_state}**."
         )
+        for rec in recommendations:
+            st.info(rec)
 
-    for rec in recommendations:
-        st.info(rec)
-        summary = generate_summary(dashboard_df)
-st.divider()
+    # Generate summary only once
+    summary = generate_summary(dashboard_df)
 
-st.header("🤖 AI Business Analyst")
+    # ==================================================
+    # AI Business Analyst
+    # ==================================================
 
-if st.button("Generate AI Insights"):
-
-    with st.spinner("Gemini is analyzing your business..."):
-
-        insights = generate_ai_insights(summary)
-
-    st.markdown(insights)
-#---------------------------------------business insights---------------
     st.divider()
 
-st.header("💬 Chat with Your Business Analyst")
+    st.header("🤖 AI Business Analyst")
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+    if st.button("Generate AI Insights"):
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+        with st.spinner("Gemini is analyzing your business..."):
 
-prompt = st.chat_input("Ask your Business Analyst...")
+            insights = generate_ai_insights(summary)
 
-if prompt:
+        st.markdown(insights)
 
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": prompt
-        }
-    )
+    # ==================================================
+    # Chat with Business Analyst
+    # ==================================================
 
-    with st.chat_message("user"):
-        st.markdown(prompt)
+    st.divider()
 
-    with st.chat_message("assistant"):
+    st.header("💬 Chat with Your Business Analyst")
 
-        with st.spinner("Thinking..."):
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-            answer = ask_business_analyst(
-                summary,
-                prompt
-            )
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    prompt = st.chat_input("Ask your Business Analyst...")
+
+    if prompt:
+
+        st.session_state.messages.append(
+            {
+                "role": "user",
+                "content": prompt
+            }
+        )
+
+        with st.chat_message("user"):
+            st.markdown(prompt)
+
+        with st.chat_message("assistant"):
+
+            with st.spinner("Thinking..."):
+
+                answer = ask_business_analyst(
+                    dashboard_df,
+                    summary,
+                    prompt
+                )
 
             st.markdown(answer)
 
-    st.session_state.messages.append(
-        {
-            "role": "assistant",
-            "content": answer
-        }
-    )
+        st.session_state.messages.append(
+            {
+                "role": "assistant",
+                "content": answer
+            }
+        )
+
+    
