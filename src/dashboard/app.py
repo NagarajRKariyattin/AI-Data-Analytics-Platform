@@ -16,6 +16,8 @@ from src.upload.upload_csv import load_csv
 from src.database.upload_table import upload_dataframe
 from src.schema.schema_detector import get_schema
 from src.database.table_manager import get_table_names
+from src.ui.upload_ui import upload_section
+
 st.set_page_config(
     page_title="AI Data Analytics Platform",
     layout="wide"
@@ -56,57 +58,8 @@ sales_region_df = sales_by_region()
 #st.stop()
 
 st.divider()
-st.header("📂 Upload Dataset")
 
-uploaded_file = st.file_uploader(
-    "Upload a CSV file",
-    type=["csv"]
-)
-if uploaded_file is not None:
-
-    uploaded_df = load_csv(uploaded_file)
-
-    st.success("✅ Dataset uploaded successfully!")
-
-    st.write("### Preview")
-    st.dataframe(uploaded_df.head())
-    st.write("### Dataset Information")
-
-    st.write(f"Rows: {uploaded_df.shape[0]}")
-    st.write(f"Columns: {uploaded_df.shape[1]}")
-
-    st.write("### Column Names")
-    st.write(uploaded_df.columns.tolist())
-    dtype_df = uploaded_df.dtypes.astype(str).reset_index()
-    dtype_df.columns = ["Column", "Data Type"]
-
-    st.dataframe(dtype_df)
-
-    """st.write("### Data Types")
-    st.dataframe(uploaded_df.dtypes.reset_index().rename(
-        columns={"index": "Column", 0: "Data Type"}
-    ))"""
-
-    st.subheader("Upload Dataset to PostgreSQL")
-
-    tables = get_table_names()
-
-    table_name = st.selectbox(
-        "Select Table",
-        tables,
-        key="table_name"
-    )
-    if st.button("Upload to PostgreSQL"):
-
-        upload_dataframe(uploaded_df, table_name)
-
-        st.success(f"✅ '{table_name}' uploaded successfully!")
-    schema = get_schema(table_name)
-
-    st.subheader("Detected Schema")
-
-    st.table(schema)
-
+uploaded_df, table_name = upload_section()
 st.header("🤖 AI Data Analyst")
 
 question = st.text_input(
@@ -119,10 +72,10 @@ if st.button("Generate Report"):
 
     if question:
 
-        table_name = st.session_state.get("table_name")
+        table_name = st.session_state.get("active_table")
 
         if not table_name:
-            st.error("Please select a table.")
+            st.error("Please upload a dataset first.")
             st.stop()
 
         schema = get_schema(table_name)
@@ -137,7 +90,7 @@ if st.button("Generate Report"):
         st.code(sql, language="sql")
 
         # Validate SQL
-        is_valid, message = validate_sql(sql)
+        is_valid, message = validate_sql(sql, table_name)
 
         if not is_valid:
             st.error(f"❌ {message}")

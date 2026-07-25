@@ -1,12 +1,12 @@
 [
+    "show employee belong to id 8222",
+    "show employees list who has less then 15 years expirience",
+    "show all managers",
+    "show all empoyee whos takes less salary ",
+    "show all empoyees whos takes less salary ",
+    "show all empoyees whos takes highest salary ",
+    "show all empoyees whos age is greater then 40",
+    "show all empoyees",
     "sales by category",
-    "low category sales",
-    "sales by monthly",
-    "avg sales",
-    "avg sales by custom",
-    "avg profit by states",
-    "top cities by profit",
-    "sales by region",
-    "total profit by region",
-    "shipping mode"
+    "low category sales"
 ]
