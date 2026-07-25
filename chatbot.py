@@ -8,9 +8,11 @@ client = genai.Client(
     api_key=os.getenv("GOOGLE_API_KEY")
 )
 
+
 def ask_business_analyst(df, summary, question):
+
     prompt = f"""
-You are an expert Senior Business Analyst.
+You are a Senior Business Analyst.
 
 Dataset Summary:
 {summary}
@@ -22,15 +24,20 @@ User Question:
 {question}
 
 Instructions:
-- Answer based on the dataset preview and summary.
-- If the answer isn't available, clearly say so.
-- Give business recommendations whenever appropriate.
-- Do NOT generate SQL Query.
+- Answer only using the dataset information.
+- If the answer is not available, clearly say so.
+- Give business recommendations where appropriate.
 """
 
-    response = client.models.generate_content(
-        model="gemini-3.6-flash",
-        contents=prompt,
-    )
+    try:
 
-    return response.text
+        response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt,
+        )
+
+        return response.text
+
+    except Exception as e:
+
+        return f"Error: {e}"

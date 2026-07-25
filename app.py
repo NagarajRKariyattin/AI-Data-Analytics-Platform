@@ -11,6 +11,11 @@ from utils.quality import calculate_quality
 from ai_insights import generate_ai_insights
 from summary_generator import generate_summary
 from chatbot import ask_business_analyst
+from database.connection import create_connection
+from database.import_data import load_dataframe_to_db
+from google.genai import types
+
+
 print("Imported from:", ask_business_analyst.__module__)
 print("Function:", ask_business_analyst)
 print("Arg count:", ask_business_analyst.__code__.co_argcount)
@@ -319,39 +324,6 @@ if uploaded_file is not None:
             # ==================================================
             # Sidebar Filters
             # ==================================================
-            # st.sidebar.header("🎛 Dashboard Filters")
-
-            # Category Filter
-            # if "Category" in dashboard_df.columns:
-
-            #     category = st.sidebar.selectbox(
-            #         "Category",
-            #         ["All"] + sorted(
-            #             dashboard_df["Category"].dropna().unique().tolist()
-            #         ),
-            #         key="category_filter"
-            #     )
-
-                # if category != "All":
-                #     dashboard_df = dashboard_df[
-                #         dashboard_df["Category"] == category
-                #     ]
-
-            # State Filter
-            # if "State" in dashboard_df.columns:
-
-            #     state = st.sidebar.selectbox(
-            #         "State",
-            #         ["All"] + sorted(
-            #             dashboard_df["State"].dropna().unique().tolist()
-            #         ),
-            #         key="state_filter"
-            #     )
-
-                # if state != "All":
-                    # dashboard_df = dashboard_df[
-                    #     dashboard_df["State"] == state
-                    # ]
 
             st.divider()
 
@@ -376,6 +348,12 @@ if "cleaned_df" in st.session_state:
     st.header("📊 Interactive Business Dashboard")
 
     dashboard_df = st.session_state["cleaned_df"].copy()
+    conn = create_connection()
+    load_dataframe_to_db(
+    dashboard_df,
+    conn
+    )
+    st.success("✅ Dataset imported into SQLite successfully.")
 
     # ==================================================
     # Sidebar Filters
@@ -582,6 +560,7 @@ if "cleaned_df" in st.session_state:
     st.divider()
 
     st.header("💬 Chat with Your Business Analyst")
+    
 
     if "messages" not in st.session_state:
         st.session_state.messages = []
