@@ -25,6 +25,7 @@ Instructions:
 - Answer based on the dataset preview and summary.
 - If the answer isn't available, clearly say so.
 - Give business recommendations whenever appropriate.
+- Do NOT generate SQL Query.
 """
 
     response = client.models.generate_content(
