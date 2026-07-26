@@ -1,0 +1,11 @@
+Employee ID,Full Name,Department,Role,Join Date,Salary,Email
+EMP001,Jane Doe,Engineering,Senior Developer,15/03/21,115000,jane.doe@company.com
+EMP002,John Smith,Sales,Account Executive,01/08/20,85000,john.smith@company.com
+EMP003,Alice Johnson,Marketing,Marketing Manager,10/11/22,95000,alice.johnson@company.com
+EMP004,Bob Brown,Engineering,QA Engineer,15/01/23,80000,bob.brown@company.com
+EMP005,Charlie Green,HR,HR Specialist,20/05/19,72000,charlie.green@company.com
+EMP006,Diana Prince,Product,Product Manager,01/10/21,110000,diana.prince@company.com
+EMP007,Evan Wright,Sales,Sales Representative,18/02/24,65000,evan.wright@company.com
+EMP008,Fiona Gallagher,Finance,Financial Analyst,05/04/22,88000,fiona.gallagher@company.com
+EMP009,George Clark,Engineering,DevOps Specialist,30/11/20,105000,george.clark@company.com
+EMP010,Hannah Abbott,Marketing,Content Strategist,01/09/23,78000,hannah.abbott@company.com

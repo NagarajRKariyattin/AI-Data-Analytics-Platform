@@ -1,3 +1,24 @@
 # Virtual Environment
-venv/.env
+venv/
+.venv/
+
+# Environment files
 .env
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/
+
+# Generated reports (optional)
+reports/charts/*.png

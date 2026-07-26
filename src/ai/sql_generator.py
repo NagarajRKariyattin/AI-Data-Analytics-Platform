@@ -1,21 +1,44 @@
 import requests
 
-from src.ai.prompt import DATABASE_SCHEMA
 from src.ai.query_router import get_predefined_sql
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 
-MODEL_NAME = "llama3.2:latest"
+MODEL_NAME = "qwen2.5:3b"
 
 
-def generate_sql(user_question):
-    predefined_sql = get_predefined_sql(user_question)
+def generate_sql(user_question, table_name, schema):
+    """
+    Generate SQL using Ollama based on the uploaded table schema.
+    """
 
-    if predefined_sql:
-        return predefined_sql
+    # Convert schema list into text for the prompt
+    schema_text = "\n".join(
+        [f"{col['name']} ({col['type']})" for col in schema]
+    )
+
+    # Use predefined SQL only for Superstore
+    if table_name.lower() == "superstore":
+        predefined_sql = get_predefined_sql(user_question)
+        if predefined_sql:
+            return predefined_sql
 
     prompt = f"""
-{DATABASE_SCHEMA}
+You are an expert PostgreSQL SQL generator.
+
+Table Name:
+{table_name}
+
+Columns:
+{schema_text}
+
+Rules:
+1. Generate ONLY PostgreSQL SQL.
+2. Use ONLY the columns listed above.
+3. Return ONLY the SQL query.
+4. Do NOT explain anything.
+5. Do NOT use markdown.
+6. Use PostgreSQL syntax only.
 
 Question:
 {user_question}
@@ -32,17 +55,11 @@ SQL:
         }
     )
 
-     
     sql = response.json()["response"].strip()
 
+    # Remove markdown if returned by the model
     sql = sql.replace("```sql", "")
     sql = sql.replace("```", "")
     sql = sql.strip()
 
     return sql
-'''
-if __name__ == "__main__":
-    question = "Show total sales by region"
-    sql = generate_sql(question)
-    print(sql)
-    '''

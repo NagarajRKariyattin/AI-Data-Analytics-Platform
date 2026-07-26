@@ -14,23 +14,16 @@ def validate_columns(sql_query):
 
     return True, "Columns are valid."
 
-def validate_sql(sql_query):
-    """
-    Validate AI-generated SQL before execution.
-    Returns (True, message) if valid,
-    otherwise (False, error_message).
-    """
+def validate_sql(sql_query, table_name):
 
     if not sql_query:
         return False, "SQL query is empty."
 
     sql = sql_query.strip().upper()
 
-    # Only allow SELECT if the query dont have select it will ignore
     if not sql.startswith("SELECT"):
         return False, "Only SELECT queries are allowed."
 
-    # Block dangerous query keywords
     blocked = [
         "DROP",
         "DELETE",
@@ -45,16 +38,17 @@ def validate_sql(sql_query):
         if keyword in sql:
             return False, f"Blocked SQL keyword detected: {keyword}"
 
-    # multiple query or lines
     if sql_query.count(";") > 1:
         return False, "Multiple SQL statements are not allowed."
 
-    # Ensure correct table
-    if "SUPERSTORE" not in sql:
-        return False, "Query must use the 'superstore' table."
-        valid_columns, message = validate_columns(sql_query)
+    # Ensure the query uses the selected table
+    if table_name.upper() not in sql:
+        return False, f"Query must use the '{table_name}' table."
 
-        if not valid_columns:
-           return False, message
+    valid_columns, message = validate_columns(sql_query)
+
+    if not valid_columns:
+        return False, message
+
     return True, "SQL is valid."
 

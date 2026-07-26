@@ -1,12 +1,12 @@
 [
-    "low category sales",
-    "avg sales",
-    "avg profit by states",
-    "avg sales by custom",
-    "total Average sales by customer",
-    "Average Sales by Customer",
-    "top cities by profit",
-    "shipping mode",
-    "Shipping Mode Performance",
-    "profitable products"
+    "number of employees",
+    "Missing values",
+    "Bottom 5 performers",
+    "Top 5 performers",
+    "show me departments with average salary",
+    "Show all departments with average salary? ",
+    "Show all departments with average salary. remember this dataset has (highest average salary from marketing and lowest average salary from sales ).",
+    "Show all departments with average salary ",
+    "Show all departments ",
+    "Show gender distribution"
 ]
