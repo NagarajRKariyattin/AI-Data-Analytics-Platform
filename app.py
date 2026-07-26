@@ -14,7 +14,10 @@ from chatbot import ask_business_analyst
 from database.connection import create_connection
 from database.import_data import load_dataframe_to_db
 from google.genai import types
-
+from database.queries import execute_query
+from sql_generator import generate_sql
+from intent_router import detect_intent
+import pandas as pd
 
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
@@ -310,13 +313,13 @@ if uploaded_file is not None:
             # ==================================================
             
 
-            if "cleaned_df" in st.session_state:
+            # if "cleaned_df" in st.session_state:
 
-                st.header("📊 Interactive Business Dashboard")
-                dashboard_df = st.session_state["cleaned_df"].copy()
-            else:
-                st.warning("Please clean the dataset first.")
-                st.stop()
+            #     st.header("📊 Interactive Business Dashboard")
+            #     dashboard_df = st.session_state["cleaned_df"].copy()
+            # else:
+            #     st.warning("Please clean the dataset first.")
+            #     st.stop()
             # ==================================================
             # Sidebar Filters
             # ==================================================
@@ -350,6 +353,84 @@ if "cleaned_df" in st.session_state:
     conn
     )
     st.success("✅ Dataset imported into SQLite successfully.")
+
+
+    ##English to sql--------------------------------------------
+st.divider()
+
+st.header("🧠 AI SQL Business Analyst")
+
+sql_question = st.text_input(
+    "Ask your data in plain English"
+)
+
+if st.button("Generate SQL & Execute"):
+
+    if sql_question.strip():
+
+        with st.spinner("Generating SQL..."):
+
+            sql = generate_sql(
+                sql_question,
+                list(dashboard_df.columns)
+            )
+
+        st.subheader("Generated SQL")
+
+        st.code(
+            sql,
+            language="sql"
+        )
+
+        try:
+
+            result = execute_query(
+                conn,
+                sql
+            )
+
+            st.subheader("Query Result")
+
+            st.dataframe(
+                result,
+                use_container_width=True
+            )
+
+            # ==================================================
+            # AI Generated Chart
+            # ==================================================
+
+            if not result.empty:
+
+                numeric_cols = result.select_dtypes(
+                    include="number"
+                ).columns
+
+                categorical_cols = result.select_dtypes(
+                    exclude="number"
+                ).columns
+
+                if len(numeric_cols) == 1 and len(categorical_cols) == 1:
+
+                    fig = px.bar(
+                        result,
+                        x=categorical_cols[0],
+                        y=numeric_cols[0],
+                        title="AI Generated Chart"
+                    )
+
+                    st.plotly_chart(
+                        fig,
+                        use_container_width=True
+                    )
+
+        except Exception as e:
+
+            st.error(f"SQL Error: {e}")
+
+    else:
+
+        st.warning("Please enter a question.")
 
     # ==================================================
     # Sidebar Filters
@@ -538,26 +619,24 @@ if "cleaned_df" in st.session_state:
     # ==================================================
 
     st.divider()
+    # st.header("🤖 AI Business Analyst")
 
-    st.header("🤖 AI Business Analyst")
+    # if st.button("Generate AI Insights"):
 
-    if st.button("Generate AI Insights"):
+    #     with st.spinner("Gemini is analyzing your business..."):
 
-        with st.spinner("Gemini is analyzing your business..."):
+    #         insights = generate_ai_insights(summary)
 
-            insights = generate_ai_insights(summary)
-
-        st.markdown(insights)
+    #     st.markdown(insights)
 
     # ==================================================
     # Chat with Business Analyst
     # ==================================================
-
+    summary = generate_summary(dashboard_df)
     st.divider()
-
-    st.header("💬 Chat with Your Business Analyst")
     
 
+    #st.header("💬 Chat with Your Business Analyst")
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -565,37 +644,73 @@ if "cleaned_df" in st.session_state:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    prompt = st.chat_input("Ask your Business Analyst...")
+prompt = st.chat_input("Ask your Business Analyst...")
 
-    if prompt:
+if prompt:
 
-        st.session_state.messages.append(
-            {
-                "role": "user",
-                "content": prompt
-            }
-        )
+    # Store user message
+    st.session_state.messages.append(
+        {
+            "role": "user",
+            "content": prompt
+        }
+    )
 
-        with st.chat_message("user"):
-            st.markdown(prompt)
+    with st.chat_message("user"):
+        st.markdown(prompt)
 
-        with st.chat_message("assistant"):
+    with st.chat_message("assistant"):
 
-            with st.spinner("Thinking..."):
+        with st.spinner("Thinking..."):
 
-                answer = ask_business_analyst(
+            intent = detect_intent(prompt)
+
+            if intent == "sql":
+
+                try:
+
+                    sql = generate_sql(
+                        prompt,
+                        list(dashboard_df.columns)
+                    )
+
+                    st.subheader("Generated SQL")
+                    st.code(sql, language="sql")
+
+                    result = execute_query(
+                        conn,
+                        sql
+                    )
+
+                    st.subheader("Query Result")
+                    st.dataframe(
+                        result,
+                        use_container_width=True
+                    )
+
+                    assistant_response = f"Generated SQL:\n\n{sql}"
+
+                except Exception as e:
+
+                    assistant_response = str(e)
+                    st.error(assistant_response)
+
+            else:
+
+                assistant_response = ask_business_analyst(
                     dashboard_df,
                     summary,
                     prompt
                 )
 
-            st.markdown(answer)
+                st.markdown(assistant_response)
 
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer
-            }
-        )
+    # Store assistant response
+    st.session_state.messages.append(
+        {
+            "role": "assistant",
+            "content": assistant_response
+        }
+    )
 
     
