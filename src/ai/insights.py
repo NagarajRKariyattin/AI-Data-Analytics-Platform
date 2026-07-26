@@ -4,7 +4,52 @@ import json
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
 MODEL_NAME = "qwen2.5:3b"
+import pandas as pd
 
+
+def analyze_dataframe(df):
+    """
+    Analyze the dataframe and return factual statistics.
+    """
+
+    analysis = []
+
+    numeric_cols = df.select_dtypes(include="number").columns.tolist()
+
+    categorical_cols = [
+        col for col in df.columns
+        if col not in numeric_cols
+    ]
+
+    if len(categorical_cols) >= 1 and len(numeric_cols) >= 1:
+
+        category = categorical_cols[0]
+        value = numeric_cols[0]
+
+        highest = df.loc[df[value].idxmax()]
+        lowest = df.loc[df[value].idxmin()]
+
+        analysis.append(
+            f"Highest {value}: {highest[category]} ({highest[value]:,.2f})"
+        )
+
+        analysis.append(
+            f"Lowest {value}: {lowest[category]} ({lowest[value]:,.2f})"
+        )
+
+        analysis.append(
+            f"Average {value}: {df[value].mean():,.2f}"
+        )
+
+        analysis.append(
+            f"Maximum {value}: {df[value].max():,.2f}"
+        )
+
+        analysis.append(
+            f"Minimum {value}: {df[value].min():,.2f}"
+        )
+
+    return "\n".join(analysis)
 
 def generate_insights(df, question):
     """
@@ -16,34 +61,32 @@ def generate_insights(df, question):
 
     # Convert only first few rows to text
     table = df.head(10).round(2).to_csv(index=False)
-
+    facts = analyze_dataframe(df)
     prompt = f"""
-You are a Senior Business Data Analyst.
+You are a Senior Business Analyst.
 
-The user asked:
-{question}
+Below are VERIFIED facts calculated from Python.
 
-The SQL query returned this data:
+{facts}
 
-{table}
+Data Preview:
 
-Analyze the data and respond in the following format:
+{df.head(20).to_string(index=False)}
 
-## Executive Summary
-(2-3 sentences summarizing the results)
+Rules:
 
-## Key Insights
-- Give exactly 3 insights with numbers where possible.
-- Mention trends and comparisons.
-- Highlight the highest and lowest values.
+1. Use ONLY the verified facts above.
+2. Never invent rankings.
+3. Never invent numbers.
+4. Never change any values.
+5. If information is unavailable, clearly say so.
+6. Write:
 
-## Business Recommendations
-- Give 2 practical recommendations.
-- Focus on improving business performance.
+Executive Summary
 
-Keep the response under 150 words.
-Do not mention SQL, databases, or technical details.
-Write in professional business language.
+Key Insights
+
+Business Recommendations
 """
 
     request_body = {

@@ -1,7 +1,7 @@
 import streamlit as st
 #from src.database.queries import sales_by_region
 from src.visualization.charts import  *
-from src.database.queries import *
+#from src.database.queries import *
 from src.ai.sql_generator import generate_sql
 from src.ai.executor import execute_sql
 from src.ai.validator import validate_sql
@@ -12,12 +12,13 @@ from src.dashboard.components.history import (
     show_history
 )
 from src.ai.insights import generate_insights
-from src.upload.upload_csv import load_csv
-from src.database.upload_table import upload_dataframe
+#from src.upload.upload_csv import load_csv
+#from src.database.upload_table import upload_dataframe
 from src.schema.schema_detector import get_schema
-from src.database.table_manager import get_table_names
+#from src.database.table_manager import get_table_names
 from src.ui.upload_ui import upload_section
-
+from src.visualization.charts import render_auto_chart
+from src.dashboard.kpi import get_dataset_info, detect_business_kpis
 st.set_page_config(
     page_title="AI Data Analytics Platform",
     layout="wide"
@@ -28,29 +29,6 @@ initialize_history()
 show_history() 
 if "selected_query" not in st.session_state:
     st.session_state.selected_query = ""
-col1, col2, col3, col4, col5 = st.columns(5)
-
-sales = total_sales().iloc[0, 0]
-profit = total_profit().iloc[0, 0]
-orders = total_orders().iloc[0, 0]
-customers = total_customers().iloc[0, 0]
-products = total_products().iloc[0, 0]
-
-with col1:
-    st.metric("Total Sales", f"${sales:,.2f}")
-
-with col2:
-    st.metric("Total Profit", f"${profit:,.2f}")
-
-with col3:
-    st.metric("Orders", f"{orders:,}")
-
-with col4:
-    st.metric("Customers", f"{customers:,}")
-
-with col5:
-    st.metric("Products", f"{products:,}")
-sales_region_df = sales_by_region()
 #st.write(sales_region_df)
 #st.write(sales_region_df.columns)
 
@@ -60,6 +38,39 @@ sales_region_df = sales_by_region()
 st.divider()
 
 uploaded_df, table_name = upload_section()
+# ===============================
+# Dynamic Dataset Overview
+# ===============================
+
+if uploaded_df is not None:
+
+    dataset_info = get_dataset_info(uploaded_df)
+    business_kpis = detect_business_kpis(uploaded_df)
+
+    st.subheader("📊 Dataset Overview")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    col1.metric("Rows", dataset_info["rows"])
+    col2.metric("Columns", dataset_info["columns"])
+    col3.metric("Numeric Columns", dataset_info["numeric"])
+    col4.metric("Categorical Columns", dataset_info["categorical"])
+    col5.metric("Missing Values", dataset_info["missing"])
+
+    if business_kpis:
+
+        st.subheader("📈 Business KPIs")
+
+        cols = st.columns(len(business_kpis))
+
+        for col, (key, value) in zip(cols, business_kpis.items()):
+
+            if isinstance(value, float):
+                value = f"{value:,.2f}"
+            elif isinstance(value, int):
+                value = f"{value:,}"
+
+            col.metric(key, value)
 st.header("🤖 AI Data Analyst")
 
 question = st.text_input(

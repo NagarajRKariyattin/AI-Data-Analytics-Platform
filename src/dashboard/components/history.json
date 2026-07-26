@@ -1,12 +1,12 @@
 [
-    "show employee belong to id 8222",
-    "show employees list who has less then 15 years expirience",
-    "show all managers",
-    "show all empoyee whos takes less salary ",
-    "show all empoyees whos takes less salary ",
-    "show all empoyees whos takes highest salary ",
-    "show all empoyees whos age is greater then 40",
-    "show all empoyees",
-    "sales by category",
-    "low category sales"
+    "number of employees",
+    "Missing values",
+    "Bottom 5 performers",
+    "Top 5 performers",
+    "show me departments with average salary",
+    "Show all departments with average salary? ",
+    "Show all departments with average salary. remember this dataset has (highest average salary from marketing and lowest average salary from sales ).",
+    "Show all departments with average salary ",
+    "Show all departments ",
+    "Show gender distribution"
 ]
