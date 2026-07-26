@@ -16,10 +16,6 @@ from database.import_data import load_dataframe_to_db
 from google.genai import types
 
 
-print("Imported from:", ask_business_analyst.__module__)
-print("Function:", ask_business_analyst)
-print("Arg count:", ask_business_analyst.__code__.co_argcount)
-
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
 
