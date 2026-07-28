@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import streamlit as st
+import plotly.express as px
 
 
 def detect_chart_type(df):
@@ -110,3 +112,124 @@ def render_auto_chart(df):
     plt.tight_layout()
 
     return fig
+
+def generate_dashboard_charts(df):
+    """
+    Generate multiple interactive charts for the dashboard.
+    Charts automatically update based on the filtered dataframe.
+    """
+
+    if df.empty:
+        st.warning("No data available for visualization.")
+        return
+
+    st.subheader("📊 Data Visualizations")
+
+    numeric_cols = df.select_dtypes(include="number").columns.tolist()
+
+    categorical_cols = [
+        col for col in df.columns
+        if col not in numeric_cols
+        and not pd.api.types.is_datetime64_any_dtype(df[col])
+    ]
+
+    # ==========================
+    # Row 1
+    # ==========================
+
+    col1, col2 = st.columns(2)
+
+    # Bar Chart
+    with col1:
+        if numeric_cols and categorical_cols:
+
+            category = categorical_cols[0]
+            value = numeric_cols[0]
+
+            chart_data = (
+                df.groupby(category)[value]
+                .mean()
+                .reset_index()
+            )
+
+            fig = px.bar(
+                chart_data,
+                x=category,
+                y=value,
+                title=f"Average {value} by {category}"
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+    # Pie Chart
+    with col2:
+        if categorical_cols:
+
+            category = categorical_cols[0]
+
+            chart_data = (
+                df[category]
+                .value_counts()
+                .reset_index()
+            )
+
+            chart_data.columns = [category, "Count"]
+
+            fig = px.pie(
+                chart_data,
+                names=category,
+                values="Count",
+                title=f"{category} Distribution"
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ==========================
+    # Row 2
+    # ==========================
+
+    col3, col4 = st.columns(2)
+
+    # Histogram
+    with col3:
+        if numeric_cols:
+
+            value = numeric_cols[0]
+
+            fig = px.histogram(
+                df,
+                x=value,
+                nbins=20,
+                title=f"{value} Distribution"
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+    # Box Plot
+    with col4:
+        if numeric_cols:
+
+            value = numeric_cols[0]
+
+            fig = px.box(
+                df,
+                y=value,
+                title=f"{value} Spread"
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
+
+    # ==========================
+    # Scatter Plot
+    # ==========================
+
+    if len(numeric_cols) >= 2:
+
+        fig = px.scatter(
+            df,
+            x=numeric_cols[0],
+            y=numeric_cols[1],
+            title=f"{numeric_cols[0]} vs {numeric_cols[1]}"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)

@@ -1,12 +1,12 @@
 [
+    "show  employees with salary above 200000",
+    "show only IT employees",
+    "first  5 employees Average Experience by Join Date ",
+    "first 10 employees Average Experience by Join Date ",
+    "Average Experience by Join Date",
     "Show only IT employees",
     "Average Age by Department",
     "Average Index by Join Date",
     "number of employees",
-    "Missing values",
-    "Bottom 5 performers",
-    "Top 5 performers",
-    "show me departments with average salary",
-    "Show all departments with average salary? ",
-    "Show all departments with average salary. remember this dataset has (highest average salary from marketing and lowest average salary from sales )."
+    "Missing values"
 ]
