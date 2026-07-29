@@ -20,7 +20,7 @@ from preprocessing.profiling import dataset_profile
 
 
 # ----------------------------------------------------
-# Page Configuration
+# Page Config
 # ----------------------------------------------------
 st.set_page_config(
     page_title="AI Business Analyst Assistant",
