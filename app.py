@@ -22,6 +22,8 @@ import pandas as pd
 from preprocessing.data_loader import load_data
 from preprocessing.profiling import dataset_profile
 
+print("m")
+
 
 # ----------------------------------------------------
 # Page Configuration
