@@ -31,7 +31,7 @@ st.set_page_config(
 
 st.title("📊 AI Business Analyst Assistant")
 st.markdown("### Upload your CSV or Excel file to begin analysis")
-print("m")
+
 
 
 # ----------------------------------------------------
